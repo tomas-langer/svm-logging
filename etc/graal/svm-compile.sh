@@ -16,7 +16,7 @@
 #
 
 # Configuration of reflection, needed for custom classes that should be instantiated or access by reflection
-GRAAL_OPTIONS="-H:ReflectionConfigurationResources=./etc/graal/reflection-config.json"
+GRAAL_OPTIONS="-H:ReflectionConfigurationFiles=./etc/graal/reflection-config.json"
 
 # Configure all resources that should be available in runtime (except for META-INF/services - those are added
 # by Helidon SVM Extension)
@@ -29,4 +29,5 @@ GRAAL_OPTIONS="${GRAAL_OPTIONS} -H:IncludeResources=${INCLUDE_RES}"
 echo "Graal options: ${GRAAL_OPTIONS}"
 
 ${NATIVE_IMAGE} -jar target/init-static.jar ${GRAAL_OPTIONS}
-${NATIVE_IMAGE} -jar target/init-main.jar ${GRAAL_OPTIONS}
+# --delay-class-initialization-to-runtime=io.helidon.reproducer.svm.TestClass is required so that TestClass.LOGGER is initialized after logging.properties has been processed
+${NATIVE_IMAGE} --delay-class-initialization-to-runtime=io.helidon.reproducer.svm.TestClass -jar target/init-main.jar ${GRAAL_OPTIONS}
